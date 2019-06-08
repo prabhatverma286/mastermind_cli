@@ -1,4 +1,4 @@
-public class Code_Checker {
+public class CodeChecker {
 
     public boolean check(Colours[] code, Colours[] guess)
     {

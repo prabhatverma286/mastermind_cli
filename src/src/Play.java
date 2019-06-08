@@ -2,6 +2,11 @@ import java.util.Scanner;
 
 public class Play {
 
+    // TODO: Display manager - display grid, display available colours, display feedback
+    // TODO: addGuess method should be more robust to handle typos
+    // TODO: new match - maintain scoreboard
+    // TODO: Java.awt.Colours
+
     public static void main(String[] args)
     {
         CodeGenerator codeGenerator = new CodeGenerator();
@@ -11,6 +16,8 @@ public class Play {
 
         for(Colours colour : Colours.values())
             System.out.print(colour.name() + ", ");
+
+        System.out.println();
 
         Colours[] generatedCode = null;
         while(generatedCode == null)

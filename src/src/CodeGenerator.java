@@ -1,52 +1,28 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class CodeGenerator {
 
-    private final Colours[] CODE;
-    private final Colours[] CHOSEN_COLOURS;
-
-    public CodeGenerator(Colours[] chosenColours) {
-        CHOSEN_COLOURS = chosenColours;
-        CODE = generateCode(chosenColours);
-    }
-
-    public CodeGenerator() {
-        CHOSEN_COLOURS = Colours.values();
-        CODE = generateCode(CHOSEN_COLOURS);
-    }
-
-    public Colours[] getCode()
+    public Colours[] generateCode(int codeLength) throws IllegalCodeLength
     {
-        return CODE;
-    }
-
-    public Colours[] stringToColours(String input_line) throws IllegalAnswerLength
-    {
-        String[] colourStrings = input_line.split(" ");
-        if(colourStrings.length != CODE.length)
+        Colours[] availableColours = Colours.values();
+        if(codeLength > availableColours.length)
         {
-            throw new IllegalAnswerLength("Input length and Code length do not match");
+            throw new IllegalCodeLength("Code length can't be more than available colours");
         }
 
-        Colours[] guess = new Colours[colourStrings.length];
-
-        for(int i = 0; i < colourStrings.length; i++)
-        {
-            guess[i] = Colours.valueOf(colourStrings[i].toUpperCase());
-        }
-
-        return guess;
-    }
-
-    private Colours[] generateCode(Colours[] chosenColours)
-    {
         Random rand = new Random();
 
-        Colours[] code = new Colours[4];
+        Colours[] code = new Colours[codeLength];
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < codeLength; i++)
         {
-            code[i] = chosenColours[rand.nextInt(chosenColours.length)];
+            Colours colour;
+            do {
+                 colour = availableColours[rand.nextInt(availableColours.length)];
+            } while(Arrays.asList(code).contains(colour));
+
+            code[i] = colour;
         }
 
         return code;

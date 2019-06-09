@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class Play {
 
-    // TODO: Display manager - display grid, display available colours, display feedback
     // TODO: new match - maintain scoreboard
     // TODO: Java.awt.Colours
 

@@ -3,36 +3,24 @@ import java.util.Scanner;
 public class Play {
 
     // TODO: Display manager - display grid, display available colours, display feedback
-    // TODO: addGuess method should be more robust to handle typos
     // TODO: new match - maintain scoreboard
     // TODO: Java.awt.Colours
 
     public static void main(String[] args)
     {
         CodeGenerator codeGenerator = new CodeGenerator();
+        CodeChecker codeChecker = new CodeChecker();
+        DisplayManager displayManager = new DisplayManager();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("The available colours are :");
-
-        for(Colours colour : Colours.values())
-            System.out.print(colour.name() + ", ");
-
-        System.out.println();
+        displayManager.greet();
+        displayManager.showInstructions();
+        displayManager.showAvailableColours();
 
         Colours[] generatedCode = null;
         while(generatedCode == null)
         {
-            System.out.println("Please enter the code length to generate");
-            int codeLength = scanner.nextInt();
-            try {
-                generatedCode = codeGenerator.generateCode(codeLength);
-            }
-            catch (IllegalCodeLength ex)
-            {
-                System.out.println(ex.getMessage());
-                System.out.println("Please try again.");
-                generatedCode = null;
-            }
+            generatedCode = getGeneratedCode(codeGenerator, scanner);
         }
 
         System.out.println("Please enter the number of guesses you want");
@@ -43,39 +31,79 @@ public class Play {
                 numberOfGuesses
         );
 
-        System.out.println("Code has been generated. Please guess.");
+        System.out.println("New match created!");
         scanner.nextLine(); //clean the input
 
         while(!match.isFinished()) {
-            System.out.println("Please enter " + match.CODE.length + " colours separated by spaces.");
-            System.out.println("For example : Red Blue Green Yellow");
 
-            String input = scanner.nextLine();
+            displayManager.showMatch(match);
+            displayManager.showAvailableColours();
+            displayManager.showInputInstructions(match);
 
-            Colours[] inputColours = new Colours[0];
+            String input = getNextInput(displayManager, scanner);
 
-            inputColours = Utils.stringToColours(input);
-            try {
-                match.addGuess(inputColours);
-            }
-            catch (IllegalAnswerLength ex)
-            {
-                System.out.println("Your answer is of incorrect length. Please try again.");
-                continue;
-            }
+            if (!validateAndSaveInput(codeChecker, match, input)) continue;
 
             if(match.win)
-            {
-                System.out.println("You win!!!");
-            }
+                displayManager.showWinStats(match);
             else
-            {
                 System.out.println("Incorrect Guess!");
-            }
-
         }
 
         if(!match.win)
-            System.out.println("You lost! :-( ");
+            displayManager.showLossStats(match);
+    }
+
+    private static boolean validateAndSaveInput(CodeChecker codeChecker, Match match, String input) {
+        Colours[] inputColours;
+        try {
+            inputColours = Utils.stringToColours(input);
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please try again.");
+            return false;
+        }
+
+        try {
+            match.addGuess(inputColours, codeChecker);
+        }
+        catch (IllegalAnswerLength ex)
+        {
+            System.out.println("Your answer is of incorrect length. Please try again.");
+            return false;
+        }
+        return true;
+    }
+
+    private static String getNextInput(DisplayManager displayManager, Scanner scanner) {
+        String input = scanner.nextLine();
+
+        if(input.toUpperCase().equals("QUIT"))
+        {
+            System.out.println("You are in the middle of a game! Are you sure? (Yes/No)");
+            input = scanner.nextLine();
+
+            if(input.toUpperCase().equals("YES")) {
+                displayManager.showExitMessage();
+                System.exit(0);
+            }
+
+        }
+        return input;
+    }
+
+    private static Colours[] getGeneratedCode(CodeGenerator codeGenerator, Scanner scanner) {
+        Colours[] generatedCode;
+        System.out.println("Please enter the code length to generate");
+        int codeLength = scanner.nextInt();
+        try {
+            generatedCode = codeGenerator.generateCode(codeLength);
+        }
+        catch (IllegalCodeLength ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Please try again.");
+            generatedCode = null;
+        }
+        return generatedCode;
     }
 }

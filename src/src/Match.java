@@ -1,21 +1,21 @@
-import java.util.Scanner;
-
-public class Match {
-    public final Colours[] CODE;
+class Match {
+    final Colours[] CODE;
 
     private Colours[][] guesses;
     private FeedbackPegState[][] feedback;
 
-    private CodeChecker codeChecker;
     private int guessesRemaining;
+
+    int getTotalGuesses() {
+        return totalGuesses;
+    }
+
     private int totalGuesses;
+    boolean win = false;
 
-    public boolean win = false;
-
-    public Match(Colours[] CODE, int numberOfGuesses) {
+    Match(Colours[] CODE, int numberOfGuesses) {
         this.CODE = CODE;
 
-        codeChecker = new CodeChecker();
         totalGuesses = numberOfGuesses;
         guessesRemaining = numberOfGuesses;
 
@@ -23,19 +23,23 @@ public class Match {
         feedback = new FeedbackPegState[numberOfGuesses][CODE.length];
     }
 
-    public boolean isFinished() {
+    boolean isFinished() {
         return win || guessesRemaining <= 0;
     }
 
-    public Colours[][] getGuesses() {
+    int getGuessesRemaining() {
+        return guessesRemaining;
+    }
+
+    Colours[][] getGuesses() {
         return guesses;
     }
 
-    public FeedbackPegState[][] getFeedback() {
+    FeedbackPegState[][] getFeedback() {
         return feedback;
     }
 
-    public void addGuess(Colours[] guess) throws IllegalAnswerLength{
+    void addGuess(Colours[] guess, CodeChecker codeChecker) throws IllegalAnswerLength{
 
         if(guess.length != CODE.length)
             throw new IllegalAnswerLength("Input length and Code length do not match");
